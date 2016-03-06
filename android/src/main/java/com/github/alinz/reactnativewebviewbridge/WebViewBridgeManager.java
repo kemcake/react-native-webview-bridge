@@ -2,6 +2,7 @@ package com.github.alinz.reactnativewebviewbridge;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Date;
 
 import android.webkit.WebView;
 
@@ -18,16 +19,14 @@ public class WebViewBridgeManager extends ReactWebViewManager {
   public static final int COMMAND_INJECT_BRIDGE_SCRIPT = 100;
   public static final int COMMAND_SEND_TO_BRIDGE = 101;
 
-  private boolean initializedBridge;
-
+  private Date lastInjectDate;
+  
   public WebViewBridgeManager() {
     super();
-    initializedBridge = false;
   }
 
   public WebViewBridgeManager(WebViewConfig webViewConfig) {
     super(webViewConfig);
-    initializedBridge = false;
   }
 
   @Override
@@ -69,11 +68,11 @@ public class WebViewBridgeManager extends ReactWebViewManager {
 
   private void injectBridgeScript(WebView root) {
     //this code needs to be called once per context
-    if (!initializedBridge) {
+    if (lastInjectDate == null || new Date().getTime() - lastInjectDate.getTime() > 2000) {
       root.addJavascriptInterface(new JavascriptBridge((ReactContext)root.getContext()), "WebViewBridgeAndroid");
-      initializedBridge = true;
       root.reload();
     }
+    lastInjectDate = new Date();
 
     //this code needs to be executed everytime a url changes.
     root.evaluateJavascript(""
