@@ -63,6 +63,7 @@ NSString *const RCTWebViewBridgeSchema = @"wvb";
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
     _webView = [[UIWebView alloc] initWithFrame:self.bounds];
+    _webView.keyboardDisplayRequiresUserAction = false;
     _webView.delegate = self;
     [self addSubview:_webView];
   }
