@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Date;
 
+import android.view.View;
 import android.webkit.WebView;
 
 import com.facebook.react.views.webview.ReactWebViewManager;
@@ -69,6 +70,7 @@ public class WebViewBridgeManager extends ReactWebViewManager {
   private void injectBridgeScript(WebView root) {
     //this code needs to be called once per context
     if (lastInjectDate == null || new Date().getTime() - lastInjectDate.getTime() > 2000) {
+      root.requestFocus(View.FOCUS_DOWN);
       root.addJavascriptInterface(new JavascriptBridge((ReactContext)root.getContext()), "WebViewBridgeAndroid");
       root.reload();
     }
