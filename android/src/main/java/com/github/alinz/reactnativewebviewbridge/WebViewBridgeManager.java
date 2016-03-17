@@ -1,18 +1,17 @@
 package com.github.alinz.reactnativewebviewbridge;
 
-import javax.annotation.Nullable;
-import java.util.Map;
-import java.util.Date;
-
 import android.view.View;
 import android.webkit.WebView;
 
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.views.webview.ReactWebViewManager;
 import com.facebook.react.views.webview.WebViewConfig;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.common.MapBuilder;
+
+import java.util.Date;
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public class WebViewBridgeManager extends ReactWebViewManager {
   private static final String REACT_CLASS = "RCTWebViewBridge";
@@ -64,7 +63,7 @@ public class WebViewBridgeManager extends ReactWebViewManager {
   private void sendToBridge(WebView root, String message) {
     //root.loadUrl("javascript:(function() {\n" + script + ";\n})();");
     String script = "WebViewBridge.onMessage('" + message + "');";
-    root.evaluateJavascript(script, null);
+    WebViewBridgeManager.evaluateJavascript(root, script);
   }
 
   private void injectBridgeScript(WebView root) {
@@ -76,18 +75,26 @@ public class WebViewBridgeManager extends ReactWebViewManager {
     }
     lastInjectDate = new Date();
 
-    //this code needs to be executed everytime a url changes.
-    root.evaluateJavascript(""
-    + "(function() {"
-        + "if (window.WebViewBridge) return;"
-        + "var customEvent = document.createEvent('Event');"
-        + "var WebViewBridge = {"
-            + "send: function(message) { WebViewBridgeAndroid.send(message); },"
-            + "onMessage: function() {}"
-        + "};"
-        + "window.WebViewBridge = WebViewBridge;"
-        + "customEvent.initEvent('WebViewBridge', true, true);"
-        + "document.dispatchEvent(customEvent);"
-    +"}());", null);
+    // this code needs to be executed everytime a url changes.
+    WebViewBridgeManager.evaluateJavascript(root, ""
+            + "(function() {"
+            + "if (window.WebViewBridge) return;"
+            + "var customEvent = document.createEvent('Event');"
+            + "var WebViewBridge = {"
+              + "send: function(message) { WebViewBridgeAndroid.send(message); },"
+              + "onMessage: function() {}"
+            + "};"
+            + "window.WebViewBridge = WebViewBridge;"
+            + "customEvent.initEvent('WebViewBridge', true, true);"
+            + "document.dispatchEvent(customEvent);"
+            + "}());");
+  }
+
+  static private void evaluateJavascript(WebView root, String javascript) {
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+      root.evaluateJavascript(javascript, null);
+    } else {
+      root.loadUrl("javascript:" + javascript);
+    }
   }
 }
