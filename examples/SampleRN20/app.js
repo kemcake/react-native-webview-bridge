@@ -3,14 +3,14 @@
  * https://github.com/facebook/react-native
  */
 'use strict';
-
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   StyleSheet,
   Text,
   View,
   WebView
-} = React;
+} = ReactNative;
 
 var WebViewBridge = require('react-native-webview-bridge');
 
@@ -69,4 +69,3 @@ const styles = StyleSheet.create({
     flex: 1
   }
 });
-
