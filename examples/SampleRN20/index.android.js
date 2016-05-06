@@ -4,8 +4,8 @@
  */
 'use strict';
 
-var React = require('react-native');
-var { AppRegistry } = React;
+var ReactNative = require('react-native');
+var { AppRegistry } = ReactNative;
 
 var Sample2 = require('./app');
 
